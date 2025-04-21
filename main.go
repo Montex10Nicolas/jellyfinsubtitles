@@ -6,6 +6,9 @@ import (
 	"log"
 	"os"
 	"path"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 func listFiles(dir string, filetype string) []string {
@@ -24,8 +27,50 @@ func listFiles(dir string, filetype string) []string {
 	return retFiles
 }
 
-func getNumberEpisode(path string) {
+func getNumberEpisode(path string) int {
+	pattern := `E\d{1,5}`
+	re := regexp.MustCompile(pattern)
+	match := re.FindString(path)
+	match = strings.ReplaceAll(match, "E", "")
+	if match == "" {
+		return -1
+	}
+	index, err := strconv.Atoi(match)
+	if err != nil {
+		return -1
+	}
+	return index
+}
 
+func changeName(videos []string, subtitels []string, videoExt string, subExt string) []string {
+	var changedSubtitles []string
+	for _, video := range videos {
+		episodeNumber := getNumberEpisode(video)
+		for _, subtitle := range subtitels {
+			epNumber := getNumberEpisode(subtitle)
+			if epNumber != -1 && epNumber == episodeNumber {
+				newSub := strings.ReplaceAll(video, videoExt, subExt)
+				changedSubtitles = append(changedSubtitles, newSub)
+			}
+		}
+	}
+
+	return changedSubtitles
+}
+
+func renameFiles(originalNames []string, correctedNames []string) {
+	for _, original := range originalNames {
+		ogNumber := getNumberEpisode(original)
+		for _, newName := range correctedNames {
+			newNumber := getNumberEpisode(newName)
+			if newNumber != -1 && newNumber == ogNumber {
+				err := os.Rename(original, newName)
+				if err != nil {
+					fmt.Println("There has been an error with ", original, "and", newName)
+				}
+			}
+		}
+	}
 }
 
 func main() {
@@ -43,12 +88,8 @@ func main() {
 	videos := listFiles(dir, videoExt)
 	subs := listFiles(dir, subExt)
 
-	fmt.Print("This are the videos\n")
-	for _, v := range videos {
-		fmt.Println(v)
-	}
-	fmt.Print("This are the subtitles\n")
-	for _, v := range subs {
-		fmt.Println(v)
-	}
+	correctSubs := changeName(videos, subs, videoExt, subExt)
+
+	renameFiles(subs, correctSubs)
+	fmt.Print("Everything should be done!")
 }
