@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+type Subtitles struct {
+	original string
+	modified string
+}
+
 func listFiles(dir string, filetype string) []string {
 	root := os.DirFS(dir)
 
@@ -28,7 +33,7 @@ func listFiles(dir string, filetype string) []string {
 }
 
 func getNumberEpisode(path string) int {
-	pattern := `E\d{1,5}`
+	pattern := `[Ee]\d{1,99}`
 	re := regexp.MustCompile(pattern)
 	match := re.FindString(path)
 	match = strings.ReplaceAll(match, "E", "")
@@ -42,15 +47,15 @@ func getNumberEpisode(path string) int {
 	return index
 }
 
-func changeName(videos []string, subtitels []string, videoExt string, subExt string, lang string) []string {
-	var changedSubtitles []string
+func changeName(videos []string, subtitels []string, videoExt string, subExt string, lang string) []Subtitles {
+	var changedSubtitles []Subtitles
 	for _, video := range videos {
 		episodeNumber := getNumberEpisode(video)
 		for _, subtitle := range subtitels {
 			epNumber := getNumberEpisode(subtitle)
 			if epNumber != -1 && epNumber == episodeNumber {
 				newSub := strings.ReplaceAll(video, videoExt, lang+"."+subExt)
-				changedSubtitles = append(changedSubtitles, newSub)
+				changedSubtitles = append(changedSubtitles, Subtitles{original: subtitle, modified: newSub})
 			}
 		}
 	}
@@ -58,25 +63,20 @@ func changeName(videos []string, subtitels []string, videoExt string, subExt str
 	return changedSubtitles
 }
 
-func renameFiles(originalNames []string, correctedNames []string) {
-	for _, original := range originalNames {
-		ogNumber := getNumberEpisode(original)
-		for _, newName := range correctedNames {
-			newNumber := getNumberEpisode(newName)
-			if newNumber != -1 && newNumber == ogNumber {
-				err := os.Rename(original, newName)
-				if err != nil {
-					fmt.Println("There has been an error with ", original, "and", newName)
-				}
-			}
+func renameFiles(subs []Subtitles) {
+	for _, sub := range subs {
+		err := os.Rename(sub.original, sub.modified)
+		if err != nil {
+			fmt.Print("Error with", err, "\n")
 		}
 	}
 }
 
 func main() {
 	var dir string
-	fmt.Print("Enter the folder path\n")
+	fmt.Print("Enter the folder path needs absolute path\n")
 	fmt.Scan(&dir)
+
 	var videoExt string
 	var subExt string
 	var lang string
@@ -93,6 +93,6 @@ func main() {
 
 	correctSubs := changeName(videos, subs, videoExt, subExt, lang)
 
-	renameFiles(subs, correctSubs)
+	renameFiles(correctSubs)
 	fmt.Print("Everything should be done!\n")
 }
