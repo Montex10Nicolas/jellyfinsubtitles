@@ -42,14 +42,14 @@ func getNumberEpisode(path string) int {
 	return index
 }
 
-func changeName(videos []string, subtitels []string, videoExt string, subExt string) []string {
+func changeName(videos []string, subtitels []string, videoExt string, subExt string, lang string) []string {
 	var changedSubtitles []string
 	for _, video := range videos {
 		episodeNumber := getNumberEpisode(video)
 		for _, subtitle := range subtitels {
 			epNumber := getNumberEpisode(subtitle)
 			if epNumber != -1 && epNumber == episodeNumber {
-				newSub := strings.ReplaceAll(video, videoExt, subExt)
+				newSub := strings.ReplaceAll(video, videoExt, lang+"."+subExt)
 				changedSubtitles = append(changedSubtitles, newSub)
 			}
 		}
@@ -79,17 +79,20 @@ func main() {
 	fmt.Scan(&dir)
 	var videoExt string
 	var subExt string
+	var lang string
 
 	fmt.Print("Enter the video extension\n")
 	fmt.Scan(&videoExt)
 	fmt.Print("Enter the subtitle extension\n")
 	fmt.Scan(&subExt)
+	fmt.Print("Which lang do you need to add? (ex: EN, ES, IT)\n")
+	fmt.Scan(&lang)
 
 	videos := listFiles(dir, videoExt)
 	subs := listFiles(dir, subExt)
 
-	correctSubs := changeName(videos, subs, videoExt, subExt)
+	correctSubs := changeName(videos, subs, videoExt, subExt, lang)
 
 	renameFiles(subs, correctSubs)
-	fmt.Print("Everything should be done!")
+	fmt.Print("Everything should be done!\n")
 }
