@@ -39,6 +39,7 @@ func getNumberEpisode(path string) int {
 	re := regexp.MustCompile(pattern)
 	match := re.FindString(path)
 	match = strings.ReplaceAll(match, "E", "")
+	match = strings.ReplaceAll(match, "e", "")
 	if match == "" {
 		return -1
 	}
@@ -99,7 +100,7 @@ func main() {
 	}
 
 	var dir string
-	fmt.Print("Enter the folder path needs absolute path\n")
+	fmt.Print("Enter the folder path needs to be absolute path\n")
 	fmt.Scan(&dir)
 
 	var videoExt string
