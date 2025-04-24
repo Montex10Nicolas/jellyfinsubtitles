@@ -78,7 +78,7 @@ func renameFiles(subs []Subtitles) {
 func main() {
 	var choice int
 	for {
-		fmt.Printf("What do you want to do?\n1) Rename subtitles\n2) Calculate time\n3) Close\n")
+		fmt.Printf("What do you want to do?\n1) Rename subtitles\n2) Shift subtitles\n3) Calculate time\n4) Close\n")
 		fmt.Scanf("%d", &choice)
 
 		fmt.Println("you chose ", choice)
@@ -93,9 +93,14 @@ func main() {
 		fmt.Println("Subtitles")
 		break
 	case 2:
+		jellyfinsubtitles.ShiftSubtitles()
+		break
+	case 3:
 		jellyfinsubtitles.Calculus()
 		return
-	case 3:
+	case 4:
+		return
+	default:
 		return
 	}
 
