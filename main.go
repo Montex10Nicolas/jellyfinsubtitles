@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"jellyfin/subtitles/jellyfinsubtitles"
 )
 
 type Subtitles struct {
@@ -73,6 +75,29 @@ func renameFiles(subs []Subtitles) {
 }
 
 func main() {
+	var choice int
+	for {
+		fmt.Printf("What do you want to do?\n1) Rename subtitles\n2) Calculate time\n3) Close\n")
+		fmt.Scanf("%d", &choice)
+
+		fmt.Println("you chose ", choice)
+
+		if choice > 0 && choice < 4 {
+			break
+		}
+	}
+
+	switch choice {
+	case 1:
+		fmt.Println("Subtitles")
+		break
+	case 2:
+		jellyfinsubtitles.Calculus()
+		return
+	case 3:
+		return
+	}
+
 	var dir string
 	fmt.Print("Enter the folder path needs absolute path\n")
 	fmt.Scan(&dir)
