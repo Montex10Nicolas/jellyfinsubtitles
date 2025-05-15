@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -114,9 +115,23 @@ func handleSRT(path string, delay int) []SRTSub {
 }
 
 func ShiftSubtitles() {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println("This only works with SRT subtitles right now")
+
 	var path string
-	fmt.Println("Enter the file path")
-	fmt.Scan(&path)
+	for {
+		fmt.Println("Enter the file path")
+		path, _ = reader.ReadString('\n')
+		path = strings.ReplaceAll(path, "\n", "")
+		path = filepath.Join(path)
+
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			fmt.Println("This path does not exists")
+		} else {
+			break
+		}
+	}
 
 	var dealy int
 	fmt.Print("How much delay (in milliseconds)")
