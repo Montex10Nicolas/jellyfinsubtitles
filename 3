@@ -13,13 +13,12 @@ type Subtitles struct {
 	modified string
 }
 
-func changeName(videos []string, subtitels []string, videoExt string, subExt string, lang string, episodeIndicatorVideo string, episodeIndicatorSubs string) []Subtitles {
+func changeName(videos []string, subtitels []string, videoExt string, subExt string, lang string, episodeIndicator string) []Subtitles {
 	var changedSubtitles []Subtitles
 	for _, video := range videos {
-		episodeNumber := getNumberEpisode(video, episodeIndicatorVideo)
+		episodeNumber := getNumberEpisode(video, episodeIndicator)
 		for _, subtitle := range subtitels {
-			epNumber := getNumberEpisode(subtitle, episodeIndicatorSubs)
-
+			epNumber := getNumberEpisode(subtitle, episodeIndicator)
 			if epNumber != -1 && epNumber == episodeNumber {
 				newSub := strings.ReplaceAll(video, videoExt, lang+"."+subExt)
 				changedSubtitles = append(changedSubtitles, Subtitles{original: subtitle, modified: newSub})
@@ -60,8 +59,7 @@ func RenameSubtitles() {
 
 	var videoExt string
 	var subExt string
-	var episodeIndicatorVideo string
-	var episodeIndicatorSubs string
+	var episodeIndicator string
 	var lang string
 
 	fmt.Print("Enter the video extension\n")
@@ -70,15 +68,15 @@ func RenameSubtitles() {
 	fmt.Scan(&subExt)
 	fmt.Print("Which lang do you need to add? (ex: EN, ES, IT)\n")
 	fmt.Scan(&lang)
-	fmt.Print("What is before the episode number of the videos (ex. EP00 write EP)\n")
-	fmt.Scan(&episodeIndicatorVideo)
-	fmt.Print("What is before the episode number of the subtitles (ex. EP00 write EP)\n")
-	fmt.Scan(&episodeIndicatorSubs)
+	fmt.Print("What is before the episode number (ex. EP00 write EP)\n")
+	fmt.Scan(&episodeIndicator)
 
 	videos := listFiles(dir, videoExt)
 	subs := listFiles(dir, subExt)
 
-	correctSubs := changeName(videos, subs, videoExt, subExt, lang, episodeIndicatorVideo, episodeIndicatorSubs)
+	fmt.Println(videos, subs)
+
+	correctSubs := changeName(videos, subs, videoExt, subExt, lang, episodeIndicator)
 
 	renameFiles(correctSubs)
 	fmt.Print("Everything should be done!\n")

@@ -30,10 +30,16 @@ func listFiles(dir string, filetype string) []string {
 }
 
 func getNumberEpisode(path string, episodeIndicator string) int {
-	pattern := fmt.Sprintf(`[%s][%s]\d{1,99}`, episodeIndicator, episodeIndicator)
+	var regexPattern string = ""
+	for range episodeIndicator {
+		regexPattern = fmt.Sprintf("%s[%s]", regexPattern, episodeIndicator)
+	}
+
+	pattern := fmt.Sprintf(`%s\d{1,99}`, regexPattern)
 
 	re := regexp.MustCompile(pattern)
 	match := re.FindString(path)
+
 	match = strings.ReplaceAll(match, episodeIndicator, "")
 	match = strings.ReplaceAll(match, episodeIndicator, "")
 	if match == "" {
