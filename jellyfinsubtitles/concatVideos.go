@@ -32,7 +32,7 @@ func ConcatVideos() {
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		var dirExists = false
+		dirExists := false
 		for {
 			fmt.Println("\n\nEnter the location of the videos (absolute path)")
 			inputDir, _ = reader.ReadString('\n')
@@ -80,7 +80,7 @@ func ConcatVideos() {
 	}
 
 	videos := listFiles(inputDir, videoExt)
-	var m map[int][]string = make(map[int][]string)
+	m := make(map[int][]string)
 
 	for _, v := range videos {
 		n := getNumberEpisode(v, episodeChar)

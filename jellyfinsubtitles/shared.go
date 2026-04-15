@@ -17,7 +17,6 @@ func listFiles(dir string, filetype string) []string {
 	filetype = strings.ReplaceAll(filetype, ".", "")
 
 	files, err := fs.Glob(root, "*."+filetype)
-
 	if err != nil {
 		log.Fatal(err)
 	}
